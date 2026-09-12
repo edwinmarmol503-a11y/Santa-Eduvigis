@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://edwinmarmol503-a11y.github.io/Santa-Eduvigis/sitemap.xml
