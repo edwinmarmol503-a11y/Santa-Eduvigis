@@ -82,8 +82,8 @@ h1,h2,h3,h4{
     margin-bottom:18px;
 }
 .kicker::before{content:"";display:inline-block;width:26px;height:2px;background:var(--rojo);vertical-align:middle;margin-right:12px;transform:translateY(-3px)}
-.kicker-light{color:var(--dorado-soft)}
-.kicker-light::before{background:var(--dorado-soft)}
+.kicker-light{color:#F3E6C6}          /* claro para pasar AA sobre el rojo (~5.7:1) */
+.kicker-light::before{background:#F3E6C6}
 
 .section-head{max-width:640px;margin:0 auto clamp(40px,6vw,68px);text-align:center}
 .section-head .kicker::before{display:none}
@@ -111,6 +111,9 @@ h1,h2,h3,h4{
 .btn:hover::after{transform:translateY(0)}
 .btn:active{transform:scale(.97)}
 .btn-primary{--bg:var(--rojo);--fg:#fff}
+.btn-gold{--bg:var(--dorado);--fg:var(--tinta);border-color:var(--dorado)}
+.btn-gold::after{background:var(--dorado-soft)}
+.btn-gold:hover{--fg:var(--tinta);box-shadow:0 16px 34px -14px rgba(199,150,47,.6)}
 .btn-outline{--bg:transparent;--fg:var(--tinta);border-color:var(--linea)}
 .btn-outline::after{background:var(--tinta)}
 .btn-outline:hover{color:#fff;border-color:var(--tinta)}
@@ -141,9 +144,10 @@ h1,h2,h3,h4{
 .cursor{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s}
 .cursor-dot,.cursor-ring{position:absolute;top:0;left:0;border-radius:50%;transform:translate(-50%,-50%)}
 .cursor-dot{width:6px;height:6px;background:var(--rojo)}
-.cursor-ring{width:38px;height:38px;border:1.5px solid rgba(176,8,35,.5);transition:width .28s var(--ease),height .28s var(--ease),background .28s,border-color .28s}
-.cursor.is-hover .cursor-ring{width:60px;height:60px;background:rgba(176,8,35,.08);border-color:transparent}
-.cursor.is-down .cursor-ring{width:26px;height:26px}
+.cursor-ring{width:38px;height:38px}
+.cursor-ring::before{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(176,8,35,.5);transition:transform .28s var(--ease),background .28s,border-color .28s}
+.cursor.is-hover .cursor-ring::before{transform:scale(1.58);background:rgba(176,8,35,.08);border-color:transparent}
+.cursor.is-down .cursor-ring::before{transform:scale(.68)}
 body.cursor-on{cursor:none}
 body.cursor-on a,body.cursor-on button{cursor:none}
 @media(hover:none),(pointer:coarse){.cursor{display:none}}
@@ -165,14 +169,6 @@ body.cursor-on a,body.cursor-on button{cursor:none}
 .page-curtain.is-in{transform:translateY(0);transition:transform .5s var(--ease-io)}
 .page-curtain.is-in .page-curtain-mark{opacity:1;transition:opacity .3s .15s}
 .page-curtain.is-out{transform:translateY(100%);transition:transform .55s var(--ease-io)}
-
-/* ---------- Topbar ---------- */
-.topbar{background:var(--tinta);color:var(--crema-3)}
-.topbar-inner{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:8px 0;font-size:.78rem;letter-spacing:.06em}
-.topbar-slogan{font-family:"Fraunces",serif;font-style:italic;letter-spacing:.01em;font-size:.92rem;color:var(--dorado-soft)}
-.topbar-tel{font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;transition:color .3s}
-.topbar-tel:hover{color:#fff}
-@media(max-width:600px){.topbar-slogan{display:none}.topbar-inner{justify-content:center}}
 
 /* ---------- Header ---------- */
 .site-header{
@@ -237,6 +233,13 @@ body.cursor-on a,body.cursor-on button{cursor:none}
     color:#fff;overflow:hidden;
     padding:clamp(48px,7vw,86px) 0 clamp(60px,8vw,110px);
     isolation:isolate;
+}
+/* Papel tapiz de línea — trigo, pan y café (inspirado en la ilustración de
+   ingredientes de LoZio Osteria). Se inserta como <div> para no pelear con
+   el ::before de puntos que ya llevan estas secciones. */
+.wallpaper-linea{
+    position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cg fill='none' stroke='%23F3E6C6' stroke-width='1.3' stroke-linecap='round' stroke-opacity='.14'%3E%3Cpath d='M24 150 24 96'/%3E%3Cellipse cx='19' cy='128' rx='5' ry='8' transform='rotate(-28 19 128)'/%3E%3Cellipse cx='29' cy='128' rx='5' ry='8' transform='rotate(28 29 128)'/%3E%3Cellipse cx='19' cy='112' rx='5' ry='8' transform='rotate(-28 19 112)'/%3E%3Cellipse cx='29' cy='112' rx='5' ry='8' transform='rotate(28 29 112)'/%3E%3Cellipse cx='24' cy='98' rx='5' ry='8'/%3E%3Cpath d='M96 138q0-24 22-24q22 0 22 24q0 9-22 9q-22 0-22-9Z'/%3E%3Cpath d='M105 118q4-7 4 11'/%3E%3Cpath d='M118 116q4-7 4 13'/%3E%3Cpath d='M131 118q4-7 4 11'/%3E%3Cpath d='M60 48h28v15a14 14 0 0 1-14 14 14 14 0 0 1-14-14Z'/%3E%3Cpath d='M88 52q11 0 11 9q0 9-11 9'/%3E%3Cpath d='M67 39q3-7 0-11'/%3E%3Cpath d='M77 39q3-7 0-11'/%3E%3C/g%3E%3C/svg%3E");
 }
 .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M0 59h60M59 0v60' stroke='%23fff' stroke-opacity='.05'/%3E%3C/svg%3E")}
 .hero-particles{position:absolute;inset:0;z-index:-1;pointer-events:none}
@@ -333,7 +336,9 @@ body.cursor-on a,body.cursor-on button{cursor:none}
 /* ---------- Historia ---------- */
 .historia{background:linear-gradient(180deg,var(--crema) 0%,var(--crema-2) 100%);overflow:hidden}
 .historia-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(40px,6vw,80px);align-items:center}
-.historia-media{position:relative;padding:0 24px 28px 0}
+.historia-media{position:relative;padding:40px 24px 28px 0}
+.historia-flourish{position:absolute;top:0;left:6px;width:36px;height:auto;overflow:visible;z-index:2}
+.historia-flourish .draw-path{fill:none;stroke:var(--rojo);stroke-width:2.4;stroke-linecap:round;transition:stroke-dashoffset 1.5s var(--ease)}
 .historia-photo{position:relative;margin:0;border-radius:var(--radio-lg);overflow:hidden;box-shadow:var(--sombra-lg);height:clamp(360px,46vw,520px)}
 .historia-photo img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease)}
 .historia-media.in-view .historia-photo img{transform:scale(1.06)}
@@ -347,8 +352,41 @@ body.cursor-on a,body.cursor-on button{cursor:none}
 .stat-num{display:block;font-family:"Fraunces",serif;font-size:clamp(1.8rem,3vw,2.5rem);font-weight:600;color:var(--rojo);line-height:1}
 .stat-label{font-size:.82rem;color:var(--tinta-45);line-height:1.4;display:block;margin-top:6px}
 .stat-row-wide{margin-top:60px}
-@media(max-width:900px){.historia-grid{grid-template-columns:1fr}.historia-media{max-width:480px;margin-inline:auto;padding-right:16px}}
+@media(max-width:900px){.historia-grid{grid-template-columns:1fr}.historia-media{max-width:480px;margin-inline:auto;padding:40px 16px 28px 0}}
 @media(max-width:560px){.stat-row{grid-template-columns:repeat(2,1fr);gap:22px 16px}}
+
+/* ---------- Momentos (galería fija con crossfade, estilo LoZio) ---------- */
+.momentos-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:clamp(32px,5vw,64px);align-items:start}
+.momentos-sticky{position:sticky;top:calc(var(--header-h) + 32px);align-self:start}
+/* Apaisado a propósito: con una foto cuadrada, un marco más ancho que alto
+   recorta arriba/abajo (no a los lados), que es lo que necesitamos para
+   que el "Conoce nuestro Menú" impreso en la foto de semita quede fuera. */
+.momentos-frame{position:relative;aspect-ratio:6/5;border-radius:var(--radio-lg);overflow:hidden;box-shadow:var(--sombra-lg);background:var(--tinta)}
+.momentos-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:opacity 1s var(--ease),transform 1.6s var(--ease)}
+.momentos-img.is-active{transform:scale(1)}
+.momentos-dots{display:flex;gap:8px;justify-content:center;margin-top:18px}
+.momentos-dots span{width:9px;height:9px;border-radius:999px;background:var(--crema-3);transform-origin:center;transition:transform .3s var(--ease),background .3s}
+.momentos-dots span.is-active{transform:scaleX(3.2);background:var(--rojo)}
+
+.momentos-text{display:flex;flex-direction:column}
+.momentos-step{position:relative;min-height:56vh;display:flex;flex-direction:column;justify-content:center;opacity:.4;border-left:2px solid var(--linea);padding-left:28px;transition:opacity .6s var(--ease),border-color .6s var(--ease)}
+.momentos-step.is-active{opacity:1;border-color:var(--rojo)}
+.momentos-n{
+    position:absolute;left:14px;top:calc(50% - .85em);transform:translateY(-50%);
+    font-family:"Fraunces",serif;font-size:clamp(4.5rem,9vw,7.5rem);font-weight:600;
+    color:var(--rojo);opacity:.09;line-height:1;letter-spacing:-.02em;z-index:0;pointer-events:none;
+}
+.momentos-step h3,.momentos-step p{position:relative;z-index:1}
+.momentos-step h3{font-size:clamp(1.6rem,3vw,2.3rem)}
+.momentos-step p{color:var(--tinta-70);max-width:38ch;margin:0}
+
+@media(max-width:860px){
+    .momentos-grid{grid-template-columns:1fr}
+    .momentos-sticky{position:static;margin-bottom:8px}
+    .momentos-frame{aspect-ratio:4/3}
+    .momentos-step{min-height:auto;padding:22px 0 22px 20px}
+    .momentos-n{font-size:3.6rem;left:2px}
+}
 
 /* ---------- Rail de productos ---------- */
 .rail-section{background:var(--tinta);color:var(--crema);overflow:hidden}
@@ -381,7 +419,7 @@ body.cursor-on a,body.cursor-on button{cursor:none}
 .prod-body p{font-size:.86rem;color:var(--tinta-70);margin:0 0 16px;flex:1}
 .prod-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--linea);padding-top:13px}
 .prod-price{font-family:"Fraunces",serif;font-weight:600;font-size:1.25rem;color:var(--rojo)}
-.prod-add{background:var(--tinta);color:#fff;font-weight:700;font-size:.78rem;padding:9px 16px;border-radius:999px;transition:background .3s,transform .4s var(--ease)}
+.prod-add{background:var(--tinta);color:#fff;font-weight:700;font-size:.82rem;min-height:44px;display:inline-flex;align-items:center;padding:10px 20px;border-radius:999px;transition:background .3s,transform .4s var(--ease)}
 .prod-add:hover{background:var(--rojo)}
 
 /* ---------- Testimonios ---------- */
@@ -402,8 +440,8 @@ body.cursor-on a,body.cursor-on button{cursor:none}
 .tst-who strong{font-weight:700}
 .tst-who em{font-style:normal;font-size:.8rem;color:var(--tinta-45)}
 .tst-dots{display:flex;gap:8px;justify-content:center;margin-top:32px}
-.tst-dots button{width:8px;height:8px;border-radius:50%;border:0;background:var(--crema-3);cursor:pointer;transition:width .3s,background .3s}
-.tst-dots button.is-active{width:26px;background:var(--rojo);border-radius:999px}
+.tst-dots button{appearance:none;-webkit-appearance:none;margin:0;padding:0;width:9px;height:9px;border:0;border-radius:999px;background:var(--crema-3);cursor:pointer;transform-origin:center;transition:transform .3s var(--ease),background .3s}
+.tst-dots button.is-active{transform:scaleX(3.2);background:var(--rojo)}
 
 /* ---------- Sucursales preview ---------- */
 .suc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
@@ -437,7 +475,7 @@ body.cursor-on a,body.cursor-on button{cursor:none}
 }
 
 /* ---------- CTA band ---------- */
-.cta-band{background:radial-gradient(120% 140% at 80% 10%,var(--rojo-700),var(--rojo-900));color:#fff;padding:clamp(60px,8vw,110px) 0;text-align:center;overflow:hidden}
+.cta-band{position:relative;isolation:isolate;background:radial-gradient(120% 140% at 80% 10%,var(--rojo-700),var(--rojo-900));color:#fff;padding:clamp(60px,8vw,110px) 0;text-align:center;overflow:hidden}
 .cta-inner{max-width:640px;margin-inline:auto}
 .cta-band h2{color:#fff;font-size:clamp(2rem,4.6vw,3.2rem)}
 .cta-band p{color:rgba(255,255,255,.82);font-size:1.08rem;margin:12px 0 30px}
@@ -520,32 +558,47 @@ body.cursor-on a,body.cursor-on button{cursor:none}
 @media(max-width:520px){.footer-top{grid-template-columns:1fr}.footer-bottom{flex-direction:column}}
 
 /* =====================================================================
-   Revelado al hacer scroll
+   Mejora progresiva — SIN JS todo el contenido es visible.
+   El estado "oculto" de las animaciones solo se aplica con html.js
    ===================================================================== */
-.reveal{opacity:0;transform:translateY(34px);transition:opacity .8s var(--ease),transform .8s var(--ease);will-change:opacity,transform}
-.reveal[data-reveal="left"]{transform:translateX(-46px)}
-.reveal[data-reveal="right"]{transform:translateX(46px)}
-.reveal[data-reveal="zoom"]{transform:scale(.92)}
+.skip-link{position:fixed;left:12px;top:-60px;z-index:10001;background:var(--tinta);color:#fff;padding:12px 18px;border-radius:0 0 12px 12px;font-weight:700;transition:top .2s}
+.skip-link:focus{top:0}
+
+html:not(.js) #preloader,
+html:not(.js) .cursor,
+html:not(.js) .page-curtain{display:none!important}
+
+.reveal{transition:opacity .8s var(--ease),transform .8s var(--ease);will-change:opacity,transform}
+.js .reveal{opacity:0;transform:translateY(34px)}
+.js .reveal[data-reveal="left"]{transform:translateX(-46px)}
+.js .reveal[data-reveal="right"]{transform:translateX(46px)}
+.js .reveal[data-reveal="zoom"]{transform:scale(.92)}
 .reveal.in-view{opacity:1;transform:none}
 
-/* clon que "vuela" (no usado aquí pero reservado) */
+/* clon que "vuela" (reservado) */
 .fly-clone{position:fixed;z-index:9999;border-radius:12px;object-fit:cover;pointer-events:none;transition:transform .7s var(--ease),opacity .7s var(--ease),border-radius .7s}
 
-/* Titular partido en palabras */
+/* Titular partido en palabras — visible por defecto */
 .hl-word{display:inline-block;overflow:hidden;vertical-align:top}
-.hl-word-in{display:inline-block;transform:translateY(110%);transition:transform .9s var(--ease)}
-.hero-ready .hl-word-in{transform:translateY(0)}
+.hl-word-in{display:inline-block;transition:transform .9s var(--ease)}
+.js .hero:not(.hero-ready) .hl-word-in{transform:translateY(110%)}
 
 /* =====================================================================
    prefers-reduced-motion
    ===================================================================== */
 @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
-    .reveal{opacity:1!important;transform:none!important}
+    .js .reveal{opacity:1!important;transform:none!important}
     .clip-reveal{clip-path:none!important}
-    .hl-word-in{transform:none!important}
+    .js .hero .hl-word-in{transform:none!important}
     .preloader{display:none}
     .cursor{display:none!important}
     .hero-scroll,.marquee-track{animation:none!important}
     .grain{display:none}
+}
+
+/* scripting: none — refuerzo para navegadores que lo soportan */
+@media (scripting:none){
+    .reveal{opacity:1!important;transform:none!important}
+    #preloader,.cursor,.page-curtain{display:none!important}
 }

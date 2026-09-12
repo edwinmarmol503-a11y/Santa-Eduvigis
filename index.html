@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=1789189486">
+<link rel="stylesheet" href="assets/css/style.css?v=1789255939">
 <link rel="icon" type="image/png" href="assets/img/logo.png">
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <script type="application/ld+json">{
@@ -233,14 +233,6 @@
 <!-- Cursor personalizado (desktop) -->
 <div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"></span></div>
 
-<!-- Barra superior -->
-<div class="topbar">
-    <div class="container topbar-inner">
-        <span class="topbar-slogan">Compartido siempre es mejor</span>
-        <a class="topbar-tel" href="tel:+50325064000">Llámanos (503) 2506 4000</a>
-    </div>
-</div>
-
 <header class="site-header" id="siteHeader">
     <div class="container header-inner">
         <a href="index.html" class="brand" data-transition>
@@ -311,21 +303,21 @@
         </div>
 
         <div class="hero-bento" aria-hidden="true">
-            <figure class="bento bento-a" data-depth="0.05">
+            <figure class="bento bento-a" data-depth="0.10">
                 <img src="assets/img/grid-semita.jpg" alt="" width="1080" height="1080" fetchpriority="high" decoding="async" style="object-position:50% 92%">
             </figure>
-            <figure class="bento bento-b" data-depth="0.11">
+            <figure class="bento bento-b" data-depth="0.14">
                 <img src="assets/img/pan-dulce.png" alt="">
                 <figcaption>25+ sabores de pan</figcaption>
             </figure>
-            <figure class="bento bento-c" data-depth="0.08">
+            <figure class="bento bento-c" data-depth="0.12">
                 <img src="assets/img/frozen.jpg" alt="">
                 <figcaption>Bebidas frías</figcaption>
             </figure>
-            <figure class="bento bento-d" data-depth="0.15">
+            <figure class="bento bento-d" data-depth="0.17">
                 <img src="assets/img/grid-pan.jpg" alt="">
             </figure>
-            <figure class="bento bento-e" data-depth="0.06">
+            <figure class="bento bento-e" data-depth="0.13">
                 <img src="assets/img/grid-pasteles.jpg" alt="">
                 <figcaption>Pasteles</figcaption>
             </figure>
@@ -436,7 +428,7 @@
 <section class="section historia" id="historia">
     <div class="container historia-grid">
         <div class="historia-media reveal" data-reveal="left">
-            <svg class="draw-flourish historia-flourish" viewBox="0 0 48 170" aria-hidden="true">
+            <svg class="draw-flourish historia-flourish" viewBox="0 0 48 170" width="36" height="128" aria-hidden="true" fill="none" stroke="#B00823" stroke-width="2.4" stroke-linecap="round">
                 <path class="draw-path" d="M24 166 L24 22"/>
                 <ellipse class="draw-path" cx="18" cy="140" rx="6" ry="10" transform="rotate(-28 18 140)"/>
                 <ellipse class="draw-path" cx="30" cy="140" rx="6" ry="10" transform="rotate(28 30 140)"/>
@@ -494,19 +486,19 @@
         <div class="momentos-sticky">
             <div class="momentos-frame">
                                                 <img class="momentos-img is-active" data-idx="0"
-                     src="assets/img/grid-semita.jpg" style="object-position:50% 88%"
+                     src="assets/img/grid-semita.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 92%;opacity:1"
                      alt="Semita original, pan con dulce de panela y jalea" loading="lazy">
                                 <img class="momentos-img" data-idx="1"
-                     src="assets/img/pan-dulce.png" style="object-position:50% 50%"
+                     src="assets/img/pan-dulce.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;opacity:0"
                      alt="Variedad de pan dulce recién horneado" loading="lazy">
                                 <img class="momentos-img" data-idx="2"
-                     src="assets/img/grid-pasteles.jpg" style="object-position:50% 55%"
+                     src="assets/img/grid-pasteles.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 55%;opacity:0"
                      alt="Pastel de fresa para compartir en familia" loading="lazy">
                                 <img class="momentos-img" data-idx="3"
-                     src="assets/img/frozen.jpg" style="object-position:50% 45%"
+                     src="assets/img/frozen.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%;opacity:0"
                      alt="Bebidas frías y frozen de frutas" loading="lazy">
                                 <img class="momentos-img" data-idx="4"
-                     src="assets/img/sucursales.png" style="object-position:50% 50%"
+                     src="assets/img/sucursales.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;opacity:0"
                      alt="Interior de una sucursal Santa Eduvigis" loading="lazy">
                             </div>
             <div class="momentos-dots" aria-hidden="true">
@@ -920,7 +912,7 @@
     </div>
 </footer>
 
-<script defer src="assets/js/anim.js?v=1789189493"></script>
+<script defer src="assets/js/anim.js?v=1789256008"></script>
 <script defer src="assets/js/main.js?v=1788883965"></script>
 <script>
 /* Red de seguridad: si anim.js no llega a cargar (404, bloqueador, error de red),

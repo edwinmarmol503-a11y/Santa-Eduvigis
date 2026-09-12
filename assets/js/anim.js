@@ -6,6 +6,8 @@
 (function () {
     'use strict';
 
+    window.__seAnim = true; // señal para el fallback de footer (si este archivo no cargara)
+
     var MQ = window.matchMedia('(prefers-reduced-motion: reduce)');
     var reduce = MQ.matches;
     try { MQ.addEventListener('change', function (e) { reduce = e.matches; }); } catch (e) {}
@@ -290,12 +292,18 @@
         if (!FINE || reduce) return;
         [].forEach.call(document.querySelectorAll('.tilt'), function (card) {
             var rect = null, raf = 0, tx = 0, ty = 0, cx = 0, cy = 0;
+            // Foto interior: se hunde/flota levemente en sentido contrario al
+            // giro de la tarjeta, el mismo lenguaje del "agua" del hero, pero
+            // aplicado a las tarjetas de categorías, sucursales y testimonios.
+            var img = card.querySelector('.cat-media img, .prod-section-media img, img');
+            var ix = 0, iy = 0, icx = 0, icy = 0;
             function enter() { rect = card.getBoundingClientRect(); card.classList.add('is-tilting'); }
             function move(e) {
                 if (!rect) rect = card.getBoundingClientRect();
                 var px = (e.clientX - rect.left) / rect.width;
                 var py = (e.clientY - rect.top) / rect.height;
                 tx = (py - 0.5) * -10; ty = (px - 0.5) * 10;
+                ix = (px - 0.5) * -18; iy = (py - 0.5) * -18;
                 card.style.setProperty('--gx', (px * 100) + '%');
                 card.style.setProperty('--gy', (py * 100) + '%');
                 if (!raf) raf = requestAnimationFrame(render);
@@ -304,12 +312,19 @@
                 raf = 0;
                 cx = lerp(cx, tx, .18); cy = lerp(cy, ty, .18);
                 card.style.transform = 'perspective(900px) rotateX(' + cx.toFixed(2) + 'deg) rotateY(' + cy.toFixed(2) + 'deg) translateZ(0)';
-                if (Math.abs(cx - tx) > 0.05 || Math.abs(cy - ty) > 0.05) raf = requestAnimationFrame(render);
+                if (img) {
+                    icx = lerp(icx, ix, .14); icy = lerp(icy, iy, .14);
+                    img.style.transform = 'scale(1.1) translate(' + icx.toFixed(1) + 'px,' + icy.toFixed(1) + 'px)';
+                }
+                var settled = Math.abs(cx - tx) < 0.05 && Math.abs(cy - ty) < 0.05 &&
+                    (!img || (Math.abs(icx - ix) < 0.2 && Math.abs(icy - iy) < 0.2));
+                if (!settled) raf = requestAnimationFrame(render);
             }
             function leave() {
-                rect = null; tx = ty = 0;
+                rect = null; tx = ty = 0; ix = iy = 0;
                 card.classList.remove('is-tilting');
                 card.style.transform = '';
+                if (img) img.style.transform = '';
             }
             card.addEventListener('pointerenter', enter);
             card.addEventListener('pointermove', move);
@@ -356,6 +371,72 @@
        9. Marquee — ritmo constante (la animación vive solo en CSS)
        ================================================================ */
     function initMarquee() { /* sin JS: el marquee avanza a velocidad fija por CSS */ }
+
+    /* ================================================================
+       9b. Trazo de líneas SVG a mano — inspirado en el ícono animado de
+       "The Symphony of Vines" (stroke-dasharray/dashoffset). Sin inline
+       styles no hay nada que ocultar: el trazo ya se ve completo por defecto.
+       ================================================================ */
+    function initDrawSvg() {
+        var svgs = [].slice.call(document.querySelectorAll('.draw-flourish'));
+        if (!svgs.length) return;
+        svgs.forEach(function (svg) {
+            var paths = [].slice.call(svg.querySelectorAll('.draw-path'));
+            paths.forEach(function (p, i) {
+                var len;
+                try { len = p.getTotalLength(); } catch (e) { return; }
+                p.style.strokeDasharray = len;
+                p.style.strokeDashoffset = len;
+                p.style.transitionDelay = (i * 0.11) + 's';
+            });
+        });
+        if (reduce || !('IntersectionObserver' in window)) {
+            svgs.forEach(function (svg) {
+                svg.querySelectorAll('.draw-path').forEach(function (p) { p.style.strokeDashoffset = 0; });
+            });
+            return;
+        }
+        var io = new IntersectionObserver(function (ents) {
+            ents.forEach(function (en) {
+                if (!en.isIntersecting) return;
+                en.target.querySelectorAll('.draw-path').forEach(function (p) { p.style.strokeDashoffset = '0'; });
+                io.unobserve(en.target);
+            });
+        }, { threshold: 0.4 });
+        svgs.forEach(function (svg) { io.observe(svg); });
+    }
+
+    /* ================================================================
+       9c. Momentos — galería fija con crossfade al hacer scroll
+       (inspirado en la sección de fotos fijas de LoZio Osteria)
+       ================================================================ */
+    function initMomentos() {
+        var wrap = document.querySelector('.momentos');
+        if (!wrap) return;
+        var steps = [].slice.call(wrap.querySelectorAll('.momentos-step'));
+        var imgs = [].slice.call(wrap.querySelectorAll('.momentos-img'));
+        var dots = [].slice.call(wrap.querySelectorAll('.momentos-dots span'));
+        if (!steps.length) return;
+
+        function activate(idx) {
+            steps.forEach(function (s, i) { s.classList.toggle('is-active', i === idx); });
+            imgs.forEach(function (im, i) {
+                im.classList.toggle('is-active', i === idx);
+                // opacidad también inline: las imágenes ya traen opacity:0/1 en el
+                // atributo style como red de seguridad si el CSS no cargara.
+                im.style.opacity = i === idx ? '1' : '0';
+            });
+            dots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
+        }
+        if (!('IntersectionObserver' in window)) return; // el paso 0 ya viene activo en el HTML
+
+        var io = new IntersectionObserver(function (ents) {
+            ents.forEach(function (en) {
+                if (en.isIntersecting) activate(steps.indexOf(en.target));
+            });
+        }, { threshold: 0.55 });
+        steps.forEach(function (s) { io.observe(s); });
+    }
 
     /* ================================================================
        10. Rail de productos — arrastre con inercia + auto-deriva
@@ -508,21 +589,37 @@
     /* ================================================================
        Init
        ================================================================ */
+    function forceVisible() {
+        [].forEach.call(document.querySelectorAll('.reveal'), function (el) { el.classList.add('in-view'); });
+        var hero = document.querySelector('.hero');
+        if (hero) hero.classList.add('hero-ready');
+        var pre = document.getElementById('preloader');
+        if (pre) pre.classList.add('is-done');
+    }
+
     onReady(function () {
-        document.documentElement.classList.add('anim-on');
-        initPreloader();
-        initCursor();
-        initReveal();
-        initCount();
-        initHero();
-        initParticles();
-        initTilt();
-        initMagnet();
-        initRipple();
-        initMarquee();
-        initRail();
-        initTestimonials();
-        initPageTransition();
+        try {
+            document.documentElement.classList.add('anim-on');
+            initPreloader();
+            initCursor();
+            initReveal();
+            initCount();
+            initHero();
+            initParticles();
+            initTilt();
+            initMagnet();
+            initRipple();
+            initMarquee();
+            initDrawSvg();
+            initMomentos();
+            initRail();
+            initTestimonials();
+            initPageTransition();
+        } catch (err) {
+            // si algo revienta, el contenido NUNCA debe quedar oculto
+            forceVisible();
+            if (window.console) console.error('anim.js:', err);
+        }
     });
 
     window.SE = { rescan: function () { initReveal(); initCount(); } };
