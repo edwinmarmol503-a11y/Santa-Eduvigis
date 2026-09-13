@@ -49,11 +49,12 @@
         var rx = window.innerWidth / 2, ry = window.innerHeight / 2;
         var x = rx, y = ry, dx = rx, dy = ry;
         window.addEventListener('mousemove', function (e) { x = e.clientX; y = e.clientY; }, { passive: true });
+        // La tacita "flota" detrás del puntero real con un pequeño retardo —
+        // se ve y se mantiene visible sobre cualquier color gracias al
+        // contorno oscuro + sombra del SVG (ver CSS), no depende del fondo.
         (function loop() {
-            dx = lerp(dx, x, .2); dy = lerp(dy, y, .2);
-            cur.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-            var ring = cur.querySelector('.cursor-ring');
-            ring.style.transform = 'translate(' + (dx - x) + 'px,' + (dy - y) + 'px) translate(-50%,-50%)';
+            dx = lerp(dx, x, .22); dy = lerp(dy, y, .22);
+            cur.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)';
             requestAnimationFrame(loop);
         })();
         var hoverSel = 'a,button,.tilt,.magnet,input,textarea,[data-cursor]';
@@ -297,6 +298,10 @@
             // aplicado a las tarjetas de categorías, sucursales y testimonios.
             var img = card.querySelector('.cat-media img, .prod-section-media img, img');
             var ix = 0, iy = 0, icx = 0, icy = 0;
+            // Respuesta al toque: la tarjeta se "aprieta" apenas se presiona
+            // (instantáneo, sin esperar el resto de la animación) y se suelta
+            // suave — igual que los botones.
+            var scaleTarget = 1, scaleCur = 1;
             function enter() { rect = card.getBoundingClientRect(); card.classList.add('is-tilting'); }
             function move(e) {
                 if (!rect) rect = card.getBoundingClientRect();
@@ -308,20 +313,24 @@
                 card.style.setProperty('--gy', (py * 100) + '%');
                 if (!raf) raf = requestAnimationFrame(render);
             }
+            function down() { scaleTarget = 0.97; scaleCur = 0.97; if (!raf) raf = requestAnimationFrame(render); }
+            function up() { scaleTarget = 1; if (!raf) raf = requestAnimationFrame(render); }
             function render() {
                 raf = 0;
                 cx = lerp(cx, tx, .18); cy = lerp(cy, ty, .18);
-                card.style.transform = 'perspective(900px) rotateX(' + cx.toFixed(2) + 'deg) rotateY(' + cy.toFixed(2) + 'deg) translateZ(0)';
+                scaleCur = lerp(scaleCur, scaleTarget, .22);
+                card.style.transform = 'perspective(900px) rotateX(' + cx.toFixed(2) + 'deg) rotateY(' + cy.toFixed(2) + 'deg) scale(' + scaleCur.toFixed(3) + ') translateZ(0)';
                 if (img) {
                     icx = lerp(icx, ix, .14); icy = lerp(icy, iy, .14);
                     img.style.transform = 'scale(1.1) translate(' + icx.toFixed(1) + 'px,' + icy.toFixed(1) + 'px)';
                 }
                 var settled = Math.abs(cx - tx) < 0.05 && Math.abs(cy - ty) < 0.05 &&
+                    Math.abs(scaleCur - scaleTarget) < 0.001 &&
                     (!img || (Math.abs(icx - ix) < 0.2 && Math.abs(icy - iy) < 0.2));
                 if (!settled) raf = requestAnimationFrame(render);
             }
             function leave() {
-                rect = null; tx = ty = 0; ix = iy = 0;
+                rect = null; tx = ty = 0; ix = iy = 0; scaleTarget = 1;
                 card.classList.remove('is-tilting');
                 card.style.transform = '';
                 if (img) img.style.transform = '';
@@ -329,6 +338,8 @@
             card.addEventListener('pointerenter', enter);
             card.addEventListener('pointermove', move);
             card.addEventListener('pointerleave', leave);
+            card.addEventListener('pointerdown', down);
+            card.addEventListener('pointerup', up);
         });
     }
 
@@ -460,31 +471,53 @@
         }
         rail.addEventListener('scroll', wrap, { passive: true });
 
-        var paused = reduce;
+        var paused = reduce, coasting = false;
         (function drift() {
-            if (!paused) { rail.scrollLeft += 0.4; wrap(); }
+            if (!paused && !coasting) { rail.scrollLeft += 0.4; wrap(); }
             requestAnimationFrame(drift);
         })();
         rail.addEventListener('pointerenter', function () { paused = true; });
         rail.addEventListener('pointerleave', function () { paused = reduce; });
         rail.addEventListener('touchstart', function () { paused = true; }, { passive: true });
 
-        // arrastre con mouse
-        var down = false, sx = 0, sl = 0, moved = 0;
+        // arrastre con mouse — al soltar, sigue "deslizando" con la velocidad
+        // que traía (deceleración exponencial), como un scroll físico real,
+        // en vez de frenar en seco.
+        var down = false, sx = 0, sl = 0, moved = 0, hist = [];
+        function sample(x) { hist.push({ x: x, t: performance.now() }); if (hist.length > 6) hist.shift(); }
+        function velocity() {
+            if (hist.length < 2) return 0;
+            var a = hist[0], b = hist[hist.length - 1], dt = b.t - a.t;
+            return dt > 0 ? (b.x - a.x) / dt : 0; // px/ms
+        }
         rail.addEventListener('pointerdown', function (e) {
             if (e.pointerType === 'touch') return;
-            down = true; moved = 0; sx = e.clientX; sl = rail.scrollLeft;
+            down = true; moved = 0; sx = e.clientX; sl = rail.scrollLeft; hist = [];
+            sample(e.clientX);
+            coasting = false;
             rail.classList.add('is-grabbing'); paused = true;
         });
         window.addEventListener('pointermove', function (e) {
             if (!down) return;
             var dx = e.clientX - sx; moved = Math.abs(dx);
+            sample(e.clientX);
             rail.scrollLeft = sl - dx; wrap();
         });
         window.addEventListener('pointerup', function () {
             if (!down) return;
             down = false; rail.classList.remove('is-grabbing');
-            setTimeout(function () { paused = reduce; }, 1200);
+            var v = -velocity() * 16; // px/ms -> aprox px/frame a 60fps
+            if (!reduce && Math.abs(v) > 1.5) {
+                coasting = true;
+                (function coast() {
+                    v *= 0.945; // deceleración exponencial
+                    rail.scrollLeft += v; wrap();
+                    if (Math.abs(v) > 0.15) requestAnimationFrame(coast);
+                    else { coasting = false; setTimeout(function () { paused = reduce; }, 900); }
+                })();
+            } else {
+                setTimeout(function () { paused = reduce; }, 1200);
+            }
         });
         rail.addEventListener('click', function (e) {
             if (moved > 8) { e.preventDefault(); e.stopPropagation(); }
@@ -531,21 +564,33 @@
         slider.addEventListener('pointerenter', function () { clearInterval(timer); });
         slider.addEventListener('pointerleave', restart);
 
-        // arrastre
-        var down = false, sx = 0, moved = 0;
+        // Arrastre con velocidad: un flick rápido cambia de tarjeta aunque se
+        // haya movido poco — no solo la distancia recorrida, como pediría
+        // cualquier gesto "físico" (Apple: proyectar el gesto, no solo medirlo).
+        var down = false, sx = 0, moved = 0, hist = [];
+        function sample(x) { hist.push({ x: x, t: performance.now() }); if (hist.length > 6) hist.shift(); }
+        function velocity() {
+            if (hist.length < 2) return 0;
+            var a = hist[0], b = hist[hist.length - 1], dt = b.t - a.t;
+            return dt > 0 ? (b.x - a.x) / dt : 0; // px/ms
+        }
         track.addEventListener('pointerdown', function (e) {
-            down = true; sx = e.clientX; moved = 0;
+            down = true; sx = e.clientX; moved = 0; hist = [];
+            sample(e.clientX);
             track.classList.add('is-grabbing'); clearInterval(timer);
         });
         window.addEventListener('pointermove', function (e) {
             if (!down) return;
             moved = e.clientX - sx;
+            sample(e.clientX);
             track.style.transform = 'translateX(' + (-idx * cardStep() + moved) + 'px)';
         });
         window.addEventListener('pointerup', function () {
             if (!down) return;
             down = false; track.classList.remove('is-grabbing');
-            if (Math.abs(moved) > 60) go(idx + (moved < 0 ? 1 : -1));
+            var v = velocity(); // px/ms — un flick típico ronda 0.5-1.5
+            if (Math.abs(v) > 0.35) go(idx + (v < 0 ? 1 : -1));
+            else if (Math.abs(moved) > 60) go(idx + (moved < 0 ? 1 : -1));
             else go(idx);
             restart();
         });

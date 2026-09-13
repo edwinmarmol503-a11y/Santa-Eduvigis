@@ -22,7 +22,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=1789255939">
+<link rel="stylesheet" href="assets/css/style.css?v=1789341576">
 <link rel="icon" type="image/png" href="assets/img/logo.png">
 <link rel="apple-touch-icon" href="assets/img/logo.png">
 <script type="application/ld+json">{
@@ -230,8 +230,18 @@
     </div>
 </div>
 
-<!-- Cursor personalizado (desktop) -->
-<div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"></span></div>
+<!-- Cursor personalizado: una tacita de café con humito (desktop) -->
+<div class="cursor" aria-hidden="true">
+    <svg class="cursor-steam" viewBox="0 0 20 24" width="17" height="20">
+        <path class="steam-a" d="M6 22c-3-3-1-5 0-8s-2-5 0-8" fill="none" stroke="#8A7869" stroke-width="1.7" stroke-linecap="round"/>
+        <path class="steam-b" d="M13 22c-3-3-1-5 0-8s-2-5 0-8" fill="none" stroke="#8A7869" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <svg class="cursor-cup" viewBox="0 0 34 28" width="30" height="25">
+        <path d="M4 10h20v9a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6v-9Z" fill="#FBF4E9" stroke="#2A1C15" stroke-width="1.7"/>
+        <path d="M24 13c4-1 6 1.5 6 4s-2 5-6 4" fill="none" stroke="#2A1C15" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M2 25h24" stroke="#2A1C15" stroke-width="1.7" stroke-linecap="round" opacity=".45"/>
+    </svg>
+</div>
 
 <header class="site-header" id="siteHeader">
     <div class="container header-inner">
@@ -427,7 +437,7 @@
 <!-- ========================== HISTORIA ========================== -->
 <section class="section historia" id="historia">
     <div class="container historia-grid">
-        <div class="historia-media reveal" data-reveal="left">
+        <div class="historia-media reveal" data-reveal="up">
             <svg class="draw-flourish historia-flourish" viewBox="0 0 48 170" width="36" height="128" aria-hidden="true" fill="none" stroke="#B00823" stroke-width="2.4" stroke-linecap="round">
                 <path class="draw-path" d="M24 166 L24 22"/>
                 <ellipse class="draw-path" cx="18" cy="140" rx="6" ry="10" transform="rotate(-28 18 140)"/>
@@ -912,7 +922,7 @@
     </div>
 </footer>
 
-<script defer src="assets/js/anim.js?v=1789256008"></script>
+<script defer src="assets/js/anim.js?v=1789341564"></script>
 <script defer src="assets/js/main.js?v=1788883965"></script>
 <script>
 /* Red de seguridad: si anim.js no llega a cargar (404, bloqueador, error de red),

@@ -109,7 +109,9 @@ h1,h2,h3,h4{
 .btn::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--rojo-900);transform:translateY(101%);transition:transform .5s var(--ease)}
 .btn:hover{box-shadow:0 16px 34px -14px rgba(176,8,35,.6)}
 .btn:hover::after{transform:translateY(0)}
-.btn:active{transform:scale(.97)}
+/* La respuesta al toque tiene que sentirse instantánea — nada de esperar
+   los .5s del efecto hover para ver que el botón "obedeció" el clic. */
+.btn:active{transform:scale(.97);transition:transform .1s ease-out}
 .btn-primary{--bg:var(--rojo);--fg:#fff}
 .btn-gold{--bg:var(--dorado);--fg:var(--tinta);border-color:var(--dorado)}
 .btn-gold::after{background:var(--dorado-soft)}
@@ -140,14 +142,27 @@ h1,h2,h3,h4{
     50%{transform:translate(-5%,4%)}70%{transform:translate(6%,2%)}90%{transform:translate(-2%,5%)}
 }
 
-/* ---------- Cursor personalizado ---------- */
+/* ---------- Cursor personalizado: tacita de café con humito ----------
+   Contorno oscuro + relleno claro + sombra propia = se ve igual de bien
+   sobre el rojo del hero que sobre el crema del resto del sitio, sin
+   depender de mix-blend-mode (que se ve mal sobre fotos). */
 .cursor{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s}
-.cursor-dot,.cursor-ring{position:absolute;top:0;left:0;border-radius:50%;transform:translate(-50%,-50%)}
-.cursor-dot{width:6px;height:6px;background:var(--rojo)}
-.cursor-ring{width:38px;height:38px}
-.cursor-ring::before{content:"";position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(176,8,35,.5);transition:transform .28s var(--ease),background .28s,border-color .28s}
-.cursor.is-hover .cursor-ring::before{transform:scale(1.58);background:rgba(176,8,35,.08);border-color:transparent}
-.cursor.is-down .cursor-ring::before{transform:scale(.68)}
+.cursor-cup{
+    position:absolute;top:0;left:0;transform:translate(-50%,-38%);
+    filter:drop-shadow(0 3px 7px rgba(0,0,0,.38));
+    transition:transform .3s var(--ease);
+}
+.cursor-steam{position:absolute;top:0;left:0;transform:translate(-50%,-128%);filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
+.cursor.is-hover .cursor-cup{transform:translate(-50%,-38%) scale(1.2) rotate(-7deg)}
+.cursor.is-down .cursor-cup{transform:translate(-50%,-38%) scale(.82)}
+@keyframes steamRise{
+    0%{transform:translateY(0) scaleX(1);opacity:0}
+    18%{opacity:.75}
+    55%{transform:translateY(-6px) scaleX(1.18);opacity:.55}
+    100%{transform:translateY(-13px) scaleX(.85);opacity:0}
+}
+.cursor-steam .steam-a{transform-origin:center bottom;animation:steamRise 2.6s ease-in-out infinite}
+.cursor-steam .steam-b{transform-origin:center bottom;animation:steamRise 2.6s ease-in-out infinite 1.1s}
 body.cursor-on{cursor:none}
 body.cursor-on a,body.cursor-on button{cursor:none}
 @media(hover:none),(pointer:coarse){.cursor{display:none}}
@@ -420,6 +435,7 @@ body.cursor-on a,body.cursor-on button{cursor:none}
 .prod-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--linea);padding-top:13px}
 .prod-price{font-family:"Fraunces",serif;font-weight:600;font-size:1.25rem;color:var(--rojo)}
 .prod-add{background:var(--tinta);color:#fff;font-weight:700;font-size:.82rem;min-height:44px;display:inline-flex;align-items:center;padding:10px 20px;border-radius:999px;transition:background .3s,transform .4s var(--ease)}
+.prod-add:active{transform:scale(.94);transition:transform .1s ease-out}
 .prod-add:hover{background:var(--rojo)}
 
 /* ---------- Testimonios ---------- */
@@ -601,4 +617,10 @@ html:not(.js) .page-curtain{display:none!important}
 @media (scripting:none){
     .reveal{opacity:1!important;transform:none!important}
     #preloader,.cursor,.page-curtain{display:none!important}
+}
+
+/* Quien pidió menos transparencia: los materiales translúcidos se vuelven
+   sólidos en vez de desaparecer el blur silenciosamente. */
+@media (prefers-reduced-transparency:reduce){
+    .site-header,.cat-nav{backdrop-filter:none!important;background:var(--crema)!important}
 }
